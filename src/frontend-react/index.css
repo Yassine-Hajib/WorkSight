@@ -1,4 +1,4 @@
-@import "../../node_modules/tailwindcss/dist/lib.d.mts";
+@import "tailwindcss";
 :root {
   --text: #6b6375;
   --text-h: #08060d;

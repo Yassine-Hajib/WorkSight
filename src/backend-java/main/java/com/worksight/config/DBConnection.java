@@ -1,32 +1,15 @@
-package com.worksight.dao;
+package com.worksight.config;
 
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.Properties;
 
 public class DBConnection {
 
-    private static Connection connection = null;
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=WorkSight_DB;encrypt=false;trustServerCertificate=true";
+    private static final String USER = "javauser";
+    private static final String PASSWORD = "1234";
 
     public static Connection getConnection() throws Exception {
-        if (connection != null && !connection.isClosed()) {
-            return connection;
-        }
-
-        Properties props = new Properties();
-        InputStream input = DBConnection.class
-                .getClassLoader()
-                .getResourceAsStream("database.properties");
-
-        props.load(input);
-
-        connection = DriverManager.getConnection(
-                props.getProperty("db.url"),
-                props.getProperty("db.username"),
-                props.getProperty("db.password")
-        );
-
-        return connection;
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
