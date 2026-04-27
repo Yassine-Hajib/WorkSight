@@ -15,38 +15,44 @@
     </properties>
 
     <dependencies>
-        <!-- SQL Server JDBC Driver -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
             <version>12.6.1.jre11</version>
         </dependency>
+        <dependency>
+            <groupId>io.javalin</groupId>
+            <artifactId>javalin</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.17.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.13</version>
+        </dependency>
     </dependencies>
 
     <build>
-        <!-- Tell Maven where the Java source is -->
         <sourceDirectory>src/backend-java/main/java</sourceDirectory>
-
-        <!-- Tell Maven where the resources are -->
         <resources>
             <resource>
                 <directory>src/backend-java/main/resources</directory>
             </resource>
         </resources>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.worksight.Main</mainClass>
-                        </manifest>
-                    </archive>
+                    <release>17</release>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

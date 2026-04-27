@@ -7,23 +7,21 @@ public class UserService {
 
     private final UserDAO dao = new UserDAO();
 
-    public User login(String email, String password, String role) throws Exception {
-        if (email.isEmpty() || password.isEmpty() || role.isEmpty())
+    public User login(String userName, String password, String role) throws Exception {
+        if (userName.isEmpty() || password.isEmpty() || role.isEmpty())
             throw new Exception("All fields are required");
-        return dao.login(email, password, role);
+        return dao.login(userName, password, role);
     }
 
-    public boolean register(String fullName, String email,
-                            String password, String role) throws Exception {
-        if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || role.isEmpty())
+    public boolean register(String userName, String password, String role) throws Exception {
+        if (userName.isEmpty() || password.isEmpty() || role.isEmpty())
             throw new Exception("All fields are required");
-        if (dao.emailExists(email))
-            throw new Exception("Email already registered");
+        if (dao.userNameExists(userName))
+            throw new Exception("Username already exists");
         User user = new User();
-        user.setFullName(fullName);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setRole(role.toUpperCase());
+        user.setUserName(userName);
+        user.setPasswordUser(password);
+        user.setRoleUser(role.toUpperCase());
         return dao.register(user);
     }
 }
