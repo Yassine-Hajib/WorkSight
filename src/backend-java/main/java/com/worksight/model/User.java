@@ -26,4 +26,4 @@ public class User {
 
     public String getRoleUser()                        { return roleUser; }
     public void   setRoleUser(String roleUser)         { this.roleUser = roleUser; }
-}
+}g

@@ -1,20 +1,10 @@
 package com.worksight;
 
-import java.sql.Connection;
-import com.worksight.config.DBConnection;
 import com.worksight.controller.LoginController;
 import io.javalin.Javalin;
 
-
 public class Main {
-    public static void main(String[] args) throws Exception {
-        Connection conn = DBConnection.getConnection();
-        if (!conn.isClosed()) {
-            System.out.println("Connected to WorkSight_DB successfully!");
-        } else {
-            System.out.println("Connection failed.");
-        }
-        conn.close();
+    public static void main(String[] args) {
 
         LoginController loginController = new LoginController();
 
@@ -29,10 +19,10 @@ public class Main {
 
         app.start(8080);
 
-        System.out.println("Backend running on http://localhost:8080");
-
-
-
-
+        System.out.println("========================================");
+        System.out.println("  WorkSight Backend running on :8080");
+        System.out.println("  POST http://localhost:8080/api/login");
+        System.out.println("  POST http://localhost:8080/api/register");
+        System.out.println("========================================");
     }
 }
