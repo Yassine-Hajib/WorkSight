@@ -1,28 +1,29 @@
 package com.worksight;
 
+import com.worksight.controller.LoginController;
 import io.javalin.Javalin;
-import com.worksight.config.DBConnection;
-import java.sql.Connection;
 
 public class Main {
     public static void main(String[] args) {
-        // Correct Javalin 6 configuration for CORS
+
+        LoginController loginController = new LoginController();
+
         Javalin app = Javalin.create(config -> {
             config.bundledPlugins.enableCors(cors -> {
                 cors.addRule(it -> it.anyHost());
             });
-        }).start(7070);
+        });
 
-        // Test the connection from your config package
-        try (Connection conn = DBConnection.getConnection()) {
-            System.out.println("=======================================");
-            System.out.println("SUCCESS: Connected to WorkSight_DB!");
-            System.out.println("=======================================");
-        } catch (Exception e) {
-            System.err.println("DATABASE ERROR: Check your credentials in DBConnection.java");
-            e.printStackTrace();
-        }
+        app.post("/api/login",    loginController::login);
+        app.post("/api/register", loginController::register);
+        app.get("/api/health",    ctx -> ctx.result("WorkSight backend is running"));
 
-        app.get("/", ctx -> ctx.result("WorkSight Backend is running"));
+        app.start(8080);
+
+        System.out.println("========================================");
+        System.out.println("  WorkSight Backend running on :8080");
+        System.out.println("  POST http://localhost:8080/api/login");
+        System.out.println("  POST http://localhost:8080/api/register");
+        System.out.println("========================================");
     }
 }
