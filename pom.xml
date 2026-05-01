@@ -15,10 +15,11 @@
     </properties>
 
     <dependencies>
+        <!-- Corrected: Removed duplicate 12.6.1 version -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>12.6.1.jre11</version>
+            <version>13.4.0.jre11</version>
         </dependency>
         <dependency>
             <groupId>io.javalin</groupId>
@@ -38,6 +39,7 @@
     </dependencies>
 
     <build>
+        <!-- Custom source directory matching your log -->
         <sourceDirectory>src/backend-java/main/java</sourceDirectory>
         <resources>
             <resource>

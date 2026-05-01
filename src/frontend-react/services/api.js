@@ -1,4 +1,4 @@
-const BASE = "http://localhost:8080/api" ;
+const BASE = "http://localhost:7070/api" ;
 export async function loginUser(Username , password , role) {
     const res = await fetch(`${BASE}/login`,{
         methode : "POST",
