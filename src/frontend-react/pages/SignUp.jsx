@@ -1,7 +1,13 @@
-import React from 'react';
-import { useState } from "react";
+import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../services/api";
+import "./Auth.css";
+
+const LEFT_PILLS = [
+  { icon: "🚀", cls: "icon-indigo", label: "Démarrage rapide",       desc: "Opérationnel en moins de 10 minutes" },
+  { icon: "🔒", cls: "icon-teal",   label: "Sécurisé",               desc: "Chiffrement des données de bout en bout" },
+  { icon: "💬", cls: "icon-pink",   label: "Messagerie intégrée",    desc: "Communiquez sans quitter la plateforme" },
+];
 
 function SignUp() {
   const navigate = useNavigate();
@@ -16,122 +22,145 @@ function SignUp() {
     e.preventDefault();
     setError(""); setSuccess("");
     if (!userName || !password || !role) {
-      setError("Please fill in all fields.");
+      setError("Veuillez remplir tous les champs.");
       return;
     }
     if (password.length < 4) {
-      setError("Password must be at least 4 characters.");
+      setError("Le mot de passe doit contenir au moins 4 caractères.");
       return;
     }
     setLoading(true);
     try {
       const data = await registerUser(userName, password, role);
       if (data.success) {
-        setSuccess("Account created! Redirecting to login...");
+        setSuccess("Compte créé avec succès ! Redirection vers la connexion…");
         setTimeout(() => navigate("/signin"), 1500);
       } else {
         setError(data.message);
       }
     } catch {
-      setError("Cannot connect to server. Make sure the backend is running.");
+      setError("Impossible de contacter le serveur. Vérifiez que le backend est lancé.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-      <div className="min-h-screen flex bg-gray-900">
+      <div className="auth-root">
 
-        {/* Left Section */}
-        <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-700 to-indigo-900 text-white flex-col justify-center items-center p-10">
-          <h1 className="text-4xl font-bold mb-4">Join WorkSight!</h1>
-          <p className="text-lg text-center max-w-md text-gray-200">
-            Create your account to manage tasks and collaborate.
-          </p>
-          <img
-              src="https://illustrations.popsy.co/white/work-from-home.svg"
-              alt="Sign Up"
-              className="w-3/4 mt-10"
-          />
+        {/* ─── LEFT PANEL ─── */}
+        <div className="auth-left">
+          <div className="auth-left-inner">
+            <div>
+              <h1 className="auth-left-title">
+                Rejoignez<br />
+                <span>WorkSight</span>
+              </h1>
+              <p className="auth-left-sub" style={{ marginTop: '0.75rem' }}>
+                Créez votre compte en quelques secondes et commencez à gérer
+                vos équipes à distance efficacement.
+              </p>
+            </div>
+
+            <div className="auth-pills">
+              {LEFT_PILLS.map((p, i) => (
+                  <div className="auth-pill" key={i}>
+                    <div className={`auth-pill-icon ${p.cls}`}>{p.icon}</div>
+                    <div className="auth-pill-text">
+                      <span className="auth-pill-label">{p.label}</span>
+                      <span className="auth-pill-desc">{p.desc}</span>
+                    </div>
+                  </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Right Section */}
-        <div className="w-full md:w-1/2 flex justify-center items-center px-6 bg-gray-950">
-          <div className="w-full max-w-md bg-gray-800 shadow-2xl rounded-2xl p-8 border border-gray-700">
+        {/* ─── RIGHT PANEL ─── */}
+        <div className="auth-right">
+          <div className="auth-card">
 
-            <h2 className="text-3xl font-bold text-white text-center mb-2">
-              Sign Up
-            </h2>
-            <p className="text-gray-400 text-center mb-8">
-              Create your WorkSight account
-            </p>
+            <div className="auth-card-header">
+              <div className="auth-card-icon">✨</div>
+              <h2 className="auth-card-title">Créer un compte</h2>
+              <p className="auth-card-sub">Rejoignez WorkSight gratuitement</p>
+            </div>
 
             {error && (
-                <div className="mb-4 px-4 py-3 bg-red-900 border border-red-600 text-red-200 rounded-lg text-sm">
-                  {error}
+                <div className="auth-alert auth-alert-error">
+                  ⚠️ {error}
                 </div>
             )}
             {success && (
-                <div className="mb-4 px-4 py-3 bg-green-900 border border-green-600 text-green-200 rounded-lg text-sm">
-                  {success}
+                <div className="auth-alert auth-alert-success">
+                  ✅ {success}
                 </div>
             )}
 
-            <form className="space-y-5" onSubmit={handleSubmit}>
+            <form className="auth-form" onSubmit={handleSubmit}>
 
-              <div>
-                <label className="block text-gray-300 mb-2">Username</label>
-                <input
-                    type="text"
-                    placeholder="Choose a username"
-                    value={userName}
-                    onChange={e => setUserName(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+              <div className="auth-field">
+                <label>Nom d'utilisateur</label>
+                <div className="auth-input-wrap">
+                  <span className="auth-input-icon">👤</span>
+                  <input
+                      type="text"
+                      className="auth-input"
+                      placeholder="Choisissez un nom d'utilisateur"
+                      value={userName}
+                      onChange={e => setUserName(e.target.value)}
+                      autoComplete="username"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-gray-300 mb-2">Password</label>
-                <input
-                    type="password"
-                    placeholder="Choose a password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+              <div className="auth-field">
+                <label>Mot de passe</label>
+                <div className="auth-input-wrap">
+                  <span className="auth-input-icon">🔑</span>
+                  <input
+                      type="password"
+                      className="auth-input"
+                      placeholder="Choisissez un mot de passe (min. 4 car.)"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      autoComplete="new-password"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-gray-300 mb-2">Role</label>
-                <select
-                    value={role}
-                    onChange={e => setRole(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select your role</option>
-                  <option value="MANAGER">Manager</option>
-                  <option value="EMPLOYEE">Employee</option>
-                  <option value="INTERN">Intern</option>
-                </select>
+              <div className="auth-field">
+                <label>Rôle</label>
+                <div className="auth-input-wrap auth-select-wrap">
+                  <span className="auth-input-icon">🏷️</span>
+                  <select
+                      className="auth-select"
+                      value={role}
+                      onChange={e => setRole(e.target.value)}
+                  >
+                    <option value="">Sélectionnez votre rôle</option>
+                    <option value="MANAGER">Manager</option>
+                    <option value="EMPLOYEE">Employé</option>
+                    <option value="INTERN">Stagiaire</option>
+                  </select>
+                </div>
               </div>
 
-              <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50"
-              >
-                {loading ? "Creating account..." : "Sign Up"}
+              <button type="submit" className="auth-btn" disabled={loading}>
+                {loading
+                    ? <><div className="auth-spinner" /> Création en cours…</>
+                    : <>Créer mon compte →</>
+                }
               </button>
             </form>
 
-            <p className="text-center text-gray-400 mt-6">
-              Already have an account?{" "}
-              <Link to="/signin" className="text-blue-400 hover:underline">
-                Sign In
-              </Link>
+            <p className="auth-footer-link">
+              Déjà un compte ?{" "}
+              <Link to="/signin">Se connecter</Link>
             </p>
           </div>
         </div>
+
       </div>
   );
 }
