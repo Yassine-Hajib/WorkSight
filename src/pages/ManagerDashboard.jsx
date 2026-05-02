@@ -14,85 +14,77 @@ function ManagerDashboard() {
   ];
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="min-h-screen flex bg-gray-900 text-white">
+      
+        
       
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-900/70 backdrop-blur-xl border-r border-slate-800 p-6 shadow-2xl">
-                <img src={logo} alt="WorkSight" className="w-80 h-30" />
-        
-
+      <aside className="w-64 bg-gray-800 shadow-lg p-6 hidden md:block">
+  <img src={logo} alt="WorkSight" className="w-80 h-30" />
+  
         <nav className="space-y-4">
-          {["Dashboard", "Employees", "Tasks", "Reports", "Settings"].map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="block px-4 py-3 rounded-xl text-slate-300 hover:bg-blue-500/10 hover:text-blue-400 transition-all duration-300"
-            >
-              {item}
-            </a>
-          ))}
+          <a href="#" className="block hover:text-blue-400">Dashboard</a>
+          <a href="#" className="block hover:text-blue-400">Employees</a>
+          <a href="#" className="block hover:text-blue-400">Tasks</a>
+          <a href="#" className="block hover:text-blue-400">Reports</a>
+          <a href="#" className="block hover:text-blue-400">Settings</a>
         </nav>
       </aside>
 
       {/* Main */}
-      <div className="flex-1 p-10">
+      <div className="flex-1 p-8">
         
         {/* Header */}
-        <div className="flex justify-between items-center mb-10">
-  <h2 className="text-4xl font-bold text-blue-100 tracking-wide">
-    Manager Dashboard
-  </h2>
-
-  <div className="bg-slate-800/70 backdrop-blur-md px-6 py-3 rounded-2xl shadow-lg border border-slate-700">
-    <span className="text-slate-300">Welcome, </span>
-    <span className="text-blue-400 font-semibold">Manager</span>
-  </div>
-</div>
-
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-10">
-          <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-slate-700 hover:scale-105 transition-transform">
-            <h3 className="text-slate-400 text-lg">Employees</h3>
-            <p className="text-4xl font-bold text-blue-400 mt-3">24</p>
-          </div>
-
-          <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-slate-700 hover:scale-105 transition-transform">
-            <h3 className="text-slate-400 text-lg">Active Tasks</h3>
-            <p className="text-4xl font-bold text-green-400 mt-3">18</p>
-          </div>
-
-          <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-slate-700 hover:scale-105 transition-transform">
-            <h3 className="text-slate-400 text-lg">Completed</h3>
-            <p className="text-4xl font-bold text-purple-400 mt-3">52</p>
-          </div>
-
-          <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-slate-700 hover:scale-105 transition-transform">
-            <h3 className="text-slate-400 text-lg">Productivity</h3>
-            <p className="text-4xl font-bold text-yellow-400 mt-3">84%</p>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold">Manager Dashboard</h2>
+          <div className="bg-gray-800 px-4 py-2 rounded-lg">
+            Welcome, Manager
           </div>
         </div>
 
-        {/* Bottom Section */}
+        {/* Stats Cards */}
+        <div className="grid md:grid-cols-4 gap-6 mb-10">
+          <div className="bg-gray-800 p-6 rounded-xl shadow">
+            <h3 className="text-gray-400">Employees</h3>
+            <p className="text-3xl font-bold text-blue-400 mt-2">24</p>
+          </div>
+
+          <div className="bg-gray-800 p-6 rounded-xl shadow">
+            <h3 className="text-gray-400">Active Tasks</h3>
+            <p className="text-3xl font-bold text-green-400 mt-2">18</p>
+          </div>
+
+          <div className="bg-gray-800 p-6 rounded-xl shadow">
+            <h3 className="text-gray-400">Completed</h3>
+            <p className="text-3xl font-bold text-purple-400 mt-2">52</p>
+          </div>
+
+          <div className="bg-gray-800 p-6 rounded-xl shadow">
+            <h3 className="text-gray-400">Productivity</h3>
+            <p className="text-3xl font-bold text-yellow-400 mt-2">84%</p>
+          </div>
+        </div>
+
+        {/* Employees Table + Tasks */}
         <div className="grid md:grid-cols-2 gap-8">
           
-          {/* Employees Table */}
-          <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700 p-6">
-            <h3 className="text-2xl font-bold mb-6 text-white">Employees Status</h3>
-
+          {/* Employees */}
+          <div className="bg-gray-800 rounded-xl shadow p-6">
+            <h3 className="text-xl font-semibold mb-4">Employees Status</h3>
             <table className="w-full text-left">
               <thead>
-                <tr className="text-slate-400 border-b border-slate-700">
-                  <th className="pb-3">Name</th>
-                  <th className="pb-3">Status</th>
-                  <th className="pb-3">Tasks</th>
+                <tr className="text-gray-400">
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Tasks</th>
                 </tr>
               </thead>
               <tbody>
-                {employees.map((emp) => (
-                  <tr key={emp.id} className="border-b border-slate-700/50 hover:bg-slate-700/20">
-                    <td className="py-4">{emp.name}</td>
-                    <td className="py-4">{emp.status}</td>
-                    <td className="py-4">{emp.tasks}</td>
+                {employees.map(emp => (
+                  <tr key={emp.id} className="border-t border-gray-700">
+                    <td className="py-3">{emp.name}</td>
+                    <td className="py-3">{emp.status}</td>
+                    <td className="py-3">{emp.tasks}</td>
                   </tr>
                 ))}
               </tbody>
@@ -100,23 +92,19 @@ function ManagerDashboard() {
           </div>
 
           {/* Recent Tasks */}
-          <div className="bg-slate-800/60 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-700 p-6">
-            <h3 className="text-2xl font-bold mb-6 text-white">Recent Tasks</h3>
-
+          <div className="bg-gray-800 rounded-xl shadow p-6">
+            <h3 className="text-xl font-semibold mb-4">Recent Tasks</h3>
             <div className="space-y-4">
-              {tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="bg-slate-700/40 border border-slate-600 rounded-xl p-4 hover:bg-slate-700/60 transition"
-                >
-                  <h4 className="font-semibold text-lg">{task.title}</h4>
-                  <p className="text-slate-400">{task.status}</p>
+              {tasks.map(task => (
+                <div key={task.id} className="bg-gray-700 p-4 rounded-lg">
+                  <h4 className="font-semibold">{task.title}</h4>
+                  <p className="text-gray-400">{task.status}</p>
                 </div>
               ))}
             </div>
           </div>
-
         </div>
+
       </div>
     </div>
   );

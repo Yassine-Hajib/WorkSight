@@ -1,7 +1,31 @@
-public class UserService {
-    UserDAO dao = new UserDAO();
+package com.worksight.service;
 
-    public User login(String email, String password) {
-        return dao.login(email, password);
+import com.worksight.dao.UserDAO;
+import com.worksight.model.User;
+
+public class UserService {
+
+    private final UserDAO dao = new UserDAO();
+
+    public User login(String userName, String password, String role) throws Exception {
+        if (userName == null || userName.isEmpty() ||
+                password == null || password.isEmpty() ||
+                role     == null || role.isEmpty())
+            throw new Exception("All fields are required");
+        return dao.login(userName, password, role);
+    }
+
+    public boolean register(String userName, String password, String role) throws Exception {
+        if (userName == null || userName.isEmpty() ||
+                password == null || password.isEmpty() ||
+                role     == null || role.isEmpty())
+            throw new Exception("All fields are required");
+        if (dao.userNameExists(userName))
+            throw new Exception("Username already exists");
+        User user = new User();
+        user.setUserName(userName);
+        user.setPasswordUser(password);
+        user.setRoleUser(role.toUpperCase());
+        return dao.register(user);
     }
 }
