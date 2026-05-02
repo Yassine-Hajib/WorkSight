@@ -1,6 +1,15 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 function SignUp() {
+  const navigate = useNavigate();
+
+  const handleSignUp = (e) => {
+    e.preventDefault();
+    navigate("/manager-dashboard");
+  };
+
   return (
     <div className="min-h-screen flex bg-gray-900">
       
@@ -31,7 +40,7 @@ function SignUp() {
             Create your WorkSight account
           </p>
 
-          <form className="space-y-5">
+          <form onSubmit={handleSignUp} className="space-y-5">
             
             {/* Full Name */}
             <div>

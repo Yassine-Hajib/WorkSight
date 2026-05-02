@@ -1,6 +1,15 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function SignIn() {
+  const navigate = useNavigate();
+
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    // Simulate sign-in logic
+    navigate("/manager-dashboard");
+  };
+
   return (
     <div className="min-h-screen flex">
       
@@ -31,7 +40,7 @@ function SignIn() {
             Login to your RemotePulse account
           </p>
 
-          <form className="space-y-5">
+          <form onSubmit={handleSignIn} className="space-y-5">
             
             {/* Email */}
             <div>
