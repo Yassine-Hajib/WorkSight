@@ -1,5 +1,6 @@
 package com.worksight.controller;
 
+import com.worksight.dao.ManagerDAO;
 import com.worksight.model.User;
 import com.worksight.service.UserService;
 import io.javalin.http.Context;
@@ -9,7 +10,6 @@ public class LoginController {
 
     private final UserService userService = new UserService();
 
-    // React calls POST /api/login
     public void login(Context ctx) {
         try {
             Map<String, String> body = ctx.bodyAsClass(Map.class);
@@ -19,12 +19,15 @@ public class LoginController {
                     body.get("role")
             );
             if (user != null) {
+                ManagerDAO managerDAO = new ManagerDAO();
+                int managerId = managerDAO.getManagerIdByUserId(user.getUserId());
                 ctx.status(200).json(Map.of(
-                        "success",  true,
-                        "message",  "Login successful",
-                        "userId",   user.getUserId(),
-                        "userName", user.getUserName(),
-                        "role",     user.getRoleUser()
+                        "success",   true,
+                        "message",   "Login successful",
+                        "userId",    user.getUserId(),
+                        "userName",  user.getUserName(),
+                        "role",      user.getRoleUser(),
+                        "managerId", managerId
                 ));
             } else {
                 ctx.status(401).json(Map.of(
@@ -40,7 +43,6 @@ public class LoginController {
         }
     }
 
-    // React calls POST /api/register
     public void register(Context ctx) {
         try {
             Map<String, String> body = ctx.bodyAsClass(Map.class);
