@@ -15,8 +15,8 @@ public class LoginController {
             Map<String, String> body = ctx.bodyAsClass(Map.class);
             User user = userService.login(
                     body.get("userName"),
-                    body.get("password"),
-                    body.get("role")
+                    body.get("password")
+                    // ✅ no more role — DB returns it
             );
             if (user != null) {
                 ManagerDAO managerDAO = new ManagerDAO();
@@ -26,20 +26,14 @@ public class LoginController {
                         "message",   "Login successful",
                         "userId",    user.getUserId(),
                         "userName",  user.getUserName(),
-                        "role",      user.getRoleUser(),
+                        "role",      user.getRoleUser(),   // comes from DB
                         "managerId", managerId
                 ));
             } else {
-                ctx.status(401).json(Map.of(
-                        "success", false,
-                        "message", "Wrong username, password or role"
-                ));
+                ctx.status(401).json(Map.of("success", false, "message", "Wrong username or password"));
             }
         } catch (Exception e) {
-            ctx.status(400).json(Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            ));
+            ctx.status(400).json(Map.of("success", false, "message", e.getMessage()));
         }
     }
 

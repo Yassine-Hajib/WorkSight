@@ -7,25 +7,36 @@ public class UserService {
 
     private final UserDAO dao = new UserDAO();
 
-    public User login(String userName, String password, String role) throws Exception {
+    public User login(String userName, String password) throws Exception {
+
         if (userName == null || userName.isEmpty() ||
-                password == null || password.isEmpty() ||
-                role     == null || role.isEmpty())
+                password == null || password.isEmpty()) {
+
             throw new Exception("All fields are required");
-        return dao.login(userName, password, role);
+        }
+
+        return dao.login(userName, password);
     }
 
     public boolean register(String userName, String password, String role) throws Exception {
+
         if (userName == null || userName.isEmpty() ||
                 password == null || password.isEmpty() ||
-                role     == null || role.isEmpty())
+                role == null || role.isEmpty()) {
+
             throw new Exception("All fields are required");
-        if (dao.userNameExists(userName))
+        }
+
+        if (dao.userNameExists(userName)) {
             throw new Exception("Username already exists");
+        }
+
         User user = new User();
+
         user.setUserName(userName);
         user.setPasswordUser(password);
         user.setRoleUser(role.toUpperCase());
+
         return dao.register(user);
     }
 }

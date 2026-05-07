@@ -140,8 +140,6 @@ function SignUp() {
                   >
                     <option value="">Sélectionnez votre rôle</option>
                     <option value="MANAGER">Manager</option>
-                    <option value="EMPLOYEE">Employé</option>
-                    <option value="INTERN">Stagiaire</option>
                   </select>
                 </div>
               </div>

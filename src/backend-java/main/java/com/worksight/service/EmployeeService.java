@@ -11,8 +11,8 @@ public class EmployeeService {
         return dao.getByManager(managerId);
     }
 
-    public boolean add(Employee emp) throws Exception {
-        return dao.add(emp);
+    public boolean add(Employee emp, String password, String role) throws Exception {
+        return dao.add(emp, password, role);
     }
 
     public boolean update(Employee emp) throws Exception {
