@@ -11,6 +11,10 @@ public class TaskService {
         return dao.getByManager(managerId);
     }
 
+    public List<Task> getByEmployee(int employeesId) throws Exception {
+        return dao.getByEmployee(employeesId);
+    }
+
     public boolean add(Task task) throws Exception {
         return dao.add(task);
     }

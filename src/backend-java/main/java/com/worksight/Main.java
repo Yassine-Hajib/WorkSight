@@ -1,48 +1,46 @@
 package com.worksight;
 
-import com.worksight.controller.LoginController;
 import com.worksight.controller.EmployeeController;
+import com.worksight.controller.LoginController;
 import com.worksight.controller.TaskController;
 import io.javalin.Javalin;
 
 public class Main {
     public static void main(String[] args) {
 
-        LoginController    loginController    = new LoginController();
-        EmployeeController employeeController = new EmployeeController();
-        TaskController     taskController     = new TaskController();
+        LoginController    login    = new LoginController();
+        EmployeeController employee = new EmployeeController();
+        TaskController     task     = new TaskController();
 
-        Javalin app = Javalin.create(config -> {
-            config.bundledPlugins.enableCors(cors -> {
-                cors.addRule(it -> it.anyHost());
-            });
-        });
+        Javalin app = Javalin.create(config ->
+                config.bundledPlugins.enableCors(cors ->
+                        cors.addRule(it -> it.anyHost())
+                )
+        );
 
         // Auth
-        app.post("/api/login",    loginController::login);
-        app.post("/api/register", loginController::register);
+        app.post("/api/login",    login::login);
+        app.post("/api/register", login::register);
 
-        // Manager stats
-        app.get("/api/manager/{managerId}/stats",      employeeController::getStats);
+        // Manager
+        app.get ("/api/manager/{managerId}/stats",      employee::getStats);
+        app.get ("/api/manager/{managerId}/employees",  employee::getAll);
+        app.post("/api/manager/{managerId}/employees",  employee::add);
+        app.put ("/api/employees/{id}",                 employee::update);
+        app.delete("/api/employees/{id}",               employee::delete);
+        app.get ("/api/manager/{managerId}/tasks",      task::getByManager);
+        app.post("/api/manager/{managerId}/tasks",      task::add);
 
-        // Employees
-        app.get("/api/manager/{managerId}/employees",  employeeController::getAll);
-        app.post("/api/manager/{managerId}/employees", employeeController::add);
-        app.put("/api/employees/{id}",                 employeeController::update);
-        app.delete("/api/employees/{id}",              employeeController::delete);
+        // Employee / Intern
+        app.get("/api/employee/{employeeId}/tasks",     task::getByEmployee);
 
-        // Tasks
-        app.get("/api/manager/{managerId}/tasks",      taskController::getAll);
-        app.post("/api/manager/{managerId}/tasks",     taskController::add);
-        app.put("/api/tasks/{id}/status",              taskController::updateStatus);
-        app.delete("/api/tasks/{id}",                  taskController::delete);
+        // Shared
+        app.put   ("/api/tasks/{id}/status",            task::updateStatus);
+        app.delete("/api/tasks/{id}",                   task::delete);
+
+        app.get("/api/health", ctx -> ctx.result("WorkSight OK"));
 
         app.start(7070);
-
-        System.out.println("========================================");
-        System.out.println("  WorkSight Backend running on :7070");
-        System.out.println("  POST http://localhost:7070/api/login");
-        System.out.println("  POST http://localhost:7070/api/register");
-        System.out.println("========================================");
+        System.out.println("WorkSight backend running on http://localhost:7070");
     }
 }

@@ -17,6 +17,7 @@ function SignIn() {
   const [error,    setError]    = useState("");
   const [loading,  setLoading]  = useState(false);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -29,16 +30,17 @@ function SignIn() {
       const data = await loginUser(userName, password, role);
       if (data.success) {
         sessionStorage.setItem("user", JSON.stringify({
-          userId:    data.userId,
-          userName:  data.userName,
-          role:      data.role,
-          managerId: data.managerId,
+          userId:     data.userId,
+          userName:   data.userName,
+          role:       data.role,
+          managerId:  data.managerId,
+          employeeId: data.employeeId,
         }));
         if (data.role === "MANAGER")       navigate("/manager-dashboard");
         else if (data.role === "EMPLOYEE") navigate("/employee-dashboard");
-        else                               navigate("/dashboard/intern");
+        else                               navigate("/intern-dashboard");
       } else {
-        setError(data.message);
+        setError(data.message || "Identifiants incorrects.");
       }
     } catch {
       setError("Impossible de contacter le serveur. Vérifiez que le backend est lancé.");
@@ -46,6 +48,7 @@ function SignIn() {
       setLoading(false);
     }
   };
+
 
   return (
       <div className="auth-root">

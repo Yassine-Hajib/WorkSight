@@ -13,35 +13,33 @@ public class EmployeeController {
 
     public void getAll(Context ctx) {
         try {
-            int managerId = Integer.parseInt(ctx.pathParam("managerId"));
-            ctx.json(empDAO.getByManager(managerId));
+            int mid = Integer.parseInt(ctx.pathParam("managerId"));
+            ctx.json(empDAO.getByManager(mid));
         } catch (Exception e) {
             ctx.status(500).json(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
-
     public void add(Context ctx) {
         try {
-            int managerId = Integer.parseInt(ctx.pathParam("managerId"));
-            Map<String, String> body = ctx.bodyAsClass(Map.class);
+            int mid = Integer.parseInt(ctx.pathParam("managerId"));
+            Map<String,String> body = ctx.bodyAsClass(Map.class);
+            String name     = body.get("employeName");
+            String email    = body.get("emailEmploye");
+            String password = body.get("password");
+            String role     = body.getOrDefault("role", "EMPLOYEE");
 
-            String employeName  = body.get("employeName");
-            String emailEmploye = body.get("emailEmploye");
-            String password     = body.get("password");
-            String role         = body.getOrDefault("role", "EMPLOYEE");
-
-            if (employeName == null || emailEmploye == null || password == null) {
-                ctx.status(400).json(Map.of("success", false, "message", "All fields are required"));
+            if (name==null||name.isEmpty()||email==null||email.isEmpty()||
+                    password==null||password.length()<4) {
+                ctx.status(400).json(Map.of("success", false,
+                        "message", "Nom, email et mot de passe (min 4 car.) requis"));
                 return;
             }
 
             Employee emp = new Employee();
-            emp.setEmployeName(employeName);
-            emp.setEmailEmploye(emailEmploye);
-            emp.setStatus("Offline");
-            emp.setManagerId(managerId);
-
+            emp.setEmployeName(name);
+            emp.setEmailEmploye(email);
+            emp.setManagerId(mid);
             boolean ok = empDAO.add(emp, password, role);
             ctx.status(ok ? 201 : 500).json(Map.of("success", ok));
         } catch (Exception e) {
@@ -49,21 +47,16 @@ public class EmployeeController {
         }
     }
 
-
-
-
-
     public void update(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
-            Map<String, String> body = ctx.bodyAsClass(Map.class);
+            Map<String,String> body = ctx.bodyAsClass(Map.class);
             Employee emp = new Employee();
             emp.setEmployeesId(id);
             emp.setEmployeName(body.get("employeName"));
             emp.setEmailEmploye(body.get("emailEmploye"));
             emp.setStatus(body.getOrDefault("status", "Offline"));
-            boolean ok = empDAO.update(emp);
-            ctx.json(Map.of("success", ok));
+            ctx.json(Map.of("success", empDAO.update(emp)));
         } catch (Exception e) {
             ctx.status(500).json(Map.of("success", false, "message", e.getMessage()));
         }
@@ -72,8 +65,7 @@ public class EmployeeController {
     public void delete(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
-            boolean ok = empDAO.delete(id);
-            ctx.json(Map.of("success", ok));
+            ctx.json(Map.of("success", empDAO.delete(id)));
         } catch (Exception e) {
             ctx.status(500).json(Map.of("success", false, "message", e.getMessage()));
         }
@@ -81,20 +73,20 @@ public class EmployeeController {
 
     public void getStats(Context ctx) {
         try {
-            int managerId = Integer.parseInt(ctx.pathParam("managerId"));
-            int totalEmployees = empDAO.countByManager(managerId);
-            int totalTasks     = taskDAO.countByManager(managerId);
-            int completed      = taskDAO.countByStatus(managerId, "Completed");
-            int pending        = taskDAO.countByStatus(managerId, "Pending");
-            int inProgress     = taskDAO.countByStatus(managerId, "In Progress");
-            int productivity   = totalTasks > 0 ? (completed * 100 / totalTasks) : 0;
+            int mid        = Integer.parseInt(ctx.pathParam("managerId"));
+            int total      = empDAO.countByManager(mid);
+            int totalTasks = taskDAO.countByManager(mid);
+            int completed  = taskDAO.countByStatus(mid, "Completed");
+            int inProgress = taskDAO.countByStatus(mid, "In Progress");
+            int pending    = taskDAO.countByStatus(mid, "Pending");
+            int prod       = totalTasks > 0 ? (completed * 100 / totalTasks) : 0;
             ctx.json(Map.of(
-                    "totalEmployees", totalEmployees,
+                    "totalEmployees", total,
                     "totalTasks",     totalTasks,
                     "completed",      completed,
-                    "pending",        pending,
                     "inProgress",     inProgress,
-                    "productivity",   productivity
+                    "pending",        pending,
+                    "productivity",   prod
             ));
         } catch (Exception e) {
             ctx.status(500).json(Map.of("success", false, "message", e.getMessage()));

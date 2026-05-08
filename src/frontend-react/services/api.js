@@ -1,80 +1,24 @@
 const BASE = "http://localhost:7070/api";
 
-export async function loginUser(userName, password, role) {
-    const res = await fetch(`${BASE}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userName, password, role }),
-    });
-    return res.json();
-}
+const req = (method, url, body) => fetch(`${BASE}${url}`, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    ...(body ? { body: JSON.stringify(body) } : {})
+}).then(r => r.json());
 
-export async function registerUser(userName, password, role) {
-    const res = await fetch(`${BASE}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userName, password, role }),
-    });
-    return res.json();
-}
+export const loginUser       = (userName, password, role) =>
+    req("POST", "/login", { userName, password, role });
 
-export async function getStats(managerId) {
-    const res = await fetch(`${BASE}/manager/${managerId}/stats`);
-    return res.json();
-}
+export const registerUser    = (userName, password, role) =>
+    req("POST", "/register", { userName, password, role });
 
-export async function getEmployees(managerId) {
-    const res = await fetch(`${BASE}/manager/${managerId}/employees`);
-    return res.json();
-}
-
-export async function addEmployee(managerId, data) {
-    const res = await fetch(`${BASE}/manager/${managerId}/employees`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    });
-    return res.json();
-}
-
-export async function updateEmployee(id, data) {
-    const res = await fetch(`${BASE}/employees/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    });
-    return res.json();
-}
-
-export async function deleteEmployee(id) {
-    const res = await fetch(`${BASE}/employees/${id}`, { method: "DELETE" });
-    return res.json();
-}
-
-export async function getTasks(managerId) {
-    const res = await fetch(`${BASE}/manager/${managerId}/tasks`);
-    return res.json();
-}
-
-export async function addTask(managerId, data) {
-    const res = await fetch(`${BASE}/manager/${managerId}/tasks`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    });
-    return res.json();
-}
-
-export async function updateTaskStatus(id, statusTask) {
-    const res = await fetch(`${BASE}/tasks/${id}/status`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ statusTask }),
-    });
-    return res.json();
-}
-
-export async function deleteTask(id) {
-    const res = await fetch(`${BASE}/tasks/${id}`, { method: "DELETE" });
-    return res.json();
-}
+export const getStats        = (mid)        => req("GET",  `/manager/${mid}/stats`);
+export const getEmployees    = (mid)        => req("GET",  `/manager/${mid}/employees`);
+export const addEmployee     = (mid, data)  => req("POST", `/manager/${mid}/employees`, data);
+export const updateEmployee  = (id, data)   => req("PUT",  `/employees/${id}`, data);
+export const deleteEmployee  = (id)         => req("DELETE",`/employees/${id}`);
+export const getTasks        = (mid)        => req("GET",  `/manager/${mid}/tasks`);
+export const addTask         = (mid, data)  => req("POST", `/manager/${mid}/tasks`, data);
+export const getMyTasks      = (eid)        => req("GET",  `/employee/${eid}/tasks`);
+export const updateTaskStatus = (id, status)=> req("PUT",  `/tasks/${id}/status`, { statusTask: status });
+export const deleteTask      = (id)         => req("DELETE",`/tasks/${id}`);

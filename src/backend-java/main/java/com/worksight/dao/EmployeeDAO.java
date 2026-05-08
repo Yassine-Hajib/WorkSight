@@ -9,69 +9,91 @@ public class EmployeeDAO {
 
     public List<Employee> getByManager(int managerId) throws Exception {
         List<Employee> list = new ArrayList<>();
-        String sql = "SELECT * FROM Employees WHERE managerId = ?";
         Connection conn = DBConnection.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, managerId);
-        ResultSet rs = stmt.executeQuery();
+        PreparedStatement s = conn.prepareStatement(
+                "SELECT * FROM Employees WHERE managerId=?");
+        s.setInt(1, managerId);
+        ResultSet rs = s.executeQuery();
         while (rs.next()) {
-            list.add(new Employee(
-                    rs.getInt("EmployeesId"),
-                    rs.getString("employeName"),
-                    rs.getString("emailEmploye"),
-                    rs.getString("status"),
-                    rs.getInt("managerId")
-            ));
+            Employee e = new Employee();
+            e.setEmployeesId(rs.getInt("EmployeesId"));
+            e.setEmployeName(rs.getString("employeName"));
+            e.setEmailEmploye(rs.getString("emailEmploye"));
+            e.setStatus(rs.getString("status"));
+            e.setManagerId(rs.getInt("managerId"));
+            list.add(e);
         }
         conn.close();
         return list;
     }
 
-    // Creates a Users row + Employees row in one transaction
+    public Employee getByUserId(int userId) throws Exception {
+        Connection conn = DBConnection.getConnection();
+        PreparedStatement s = conn.prepareStatement(
+                "SELECT * FROM Employees WHERE userId=?");
+        s.setInt(1, userId);
+        ResultSet rs = s.executeQuery();
+        if (rs.next()) {
+            Employee e = new Employee();
+            e.setEmployeesId(rs.getInt("EmployeesId"));
+            e.setEmployeName(rs.getString("employeName"));
+            e.setEmailEmploye(rs.getString("emailEmploye"));
+            e.setStatus(rs.getString("status"));
+            e.setManagerId(rs.getInt("managerId"));
+            e.setUserId(userId);
+            conn.close();
+            return e;
+        }
+        conn.close();
+        return null;
+    }
+
+    // Creates Users row + Employees row atomically
     public boolean add(Employee emp, String password, String role) throws Exception {
         Connection conn = DBConnection.getConnection();
         conn.setAutoCommit(false);
         try {
-            // 1. Create user account
-            String sqlUser = "INSERT INTO Users (UserName, Passworduser, roleUser) VALUES (?, ?, ?)";
-            PreparedStatement stmtUser = conn.prepareStatement(sqlUser, Statement.RETURN_GENERATED_KEYS);
-            stmtUser.setString(1, emp.getEmailEmploye());
-            stmtUser.setString(2, password);
-            stmtUser.setString(3, role.toUpperCase());
-            stmtUser.executeUpdate();
-            ResultSet keys = stmtUser.getGeneratedKeys();
+            // 1. Insert into Users
+            PreparedStatement u = conn.prepareStatement(
+                    "INSERT INTO Users (UserName, Passworduser, roleUser) VALUES (?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            u.setString(1, emp.getEmailEmploye());
+            u.setString(2, password);
+            u.setString(3, role.toUpperCase());
+            u.executeUpdate();
+            ResultSet keys = u.getGeneratedKeys();
             keys.next();
             int userId = keys.getInt(1);
 
-            // 2. Create employee linked to user
-            String sqlEmp = "INSERT INTO Employees (employeName, emailEmploye, status, managerId, userId) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement stmtEmp = conn.prepareStatement(sqlEmp);
-            stmtEmp.setString(1, emp.getEmployeName());
-            stmtEmp.setString(2, emp.getEmailEmploye());
-            stmtEmp.setString(3, "Offline");
-            stmtEmp.setInt(4, emp.getManagerId());
-            stmtEmp.setInt(5, userId);
-            stmtEmp.executeUpdate();
+            // 2. Insert into Employees
+            PreparedStatement e = conn.prepareStatement(
+                    "INSERT INTO Employees (employeName, emailEmploye, status, managerId, userId) VALUES (?,?,?,?,?)");
+            e.setString(1, emp.getEmployeName());
+            e.setString(2, emp.getEmailEmploye());
+            e.setString(3, "Offline");
+            e.setInt(4, emp.getManagerId());
+            e.setInt(5, userId);
+            e.executeUpdate();
 
             conn.commit();
             conn.close();
             return true;
-        } catch (Exception e) {
+        } catch (Exception ex) {
             conn.rollback();
             conn.close();
-            throw e;
+            throw ex;
         }
     }
 
     public boolean update(Employee emp) throws Exception {
-        String sql = "UPDATE Employees SET employeName=?, emailEmploye=?, status=? WHERE EmployeesId=?";
         Connection conn = DBConnection.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setString(1, emp.getEmployeName());
-        stmt.setString(2, emp.getEmailEmploye());
-        stmt.setString(3, emp.getStatus());
-        stmt.setInt(4, emp.getEmployeesId());
-        int rows = stmt.executeUpdate();
+        PreparedStatement s = conn.prepareStatement(
+                "UPDATE Employees SET employeName=?, emailEmploye=?, status=? WHERE EmployeesId=?");
+        s.setString(1, emp.getEmployeName());
+        s.setString(2, emp.getEmailEmploye());
+        s.setString(3, emp.getStatus());
+        s.setInt(4, emp.getEmployeesId());
+        int rows = s.executeUpdate();
         conn.close();
         return rows > 0;
     }
@@ -80,47 +102,52 @@ public class EmployeeDAO {
         Connection conn = DBConnection.getConnection();
         conn.setAutoCommit(false);
         try {
-            // Get userId first
-            PreparedStatement getUser = conn.prepareStatement(
-                    "SELECT userId FROM Employees WHERE EmployeesId = ?");
-            getUser.setInt(1, employeesId);
-            ResultSet rs = getUser.executeQuery();
-            int userId = -1;
-            if (rs.next()) userId = rs.getInt("userId");
+            // Get userId
+            PreparedStatement g = conn.prepareStatement(
+                    "SELECT userId FROM Employees WHERE EmployeesId=?");
+            g.setInt(1, employeesId);
+            ResultSet rs = g.executeQuery();
+            int userId = rs.next() ? rs.getInt("userId") : -1;
+
+            // Delete tasks first
+            PreparedStatement dt = conn.prepareStatement(
+                    "DELETE FROM Task WHERE EmployeesId=?");
+            dt.setInt(1, employeesId);
+            dt.executeUpdate();
 
             // Delete employee
-            PreparedStatement delEmp = conn.prepareStatement(
-                    "DELETE FROM Employees WHERE EmployeesId = ?");
-            delEmp.setInt(1, employeesId);
-            delEmp.executeUpdate();
+            PreparedStatement de = conn.prepareStatement(
+                    "DELETE FROM Employees WHERE EmployeesId=?");
+            de.setInt(1, employeesId);
+            de.executeUpdate();
 
-            // Delete user account
+            // Delete user
             if (userId != -1) {
-                PreparedStatement delUser = conn.prepareStatement(
-                        "DELETE FROM Users WHERE userId = ?");
-                delUser.setInt(1, userId);
-                delUser.executeUpdate();
+                PreparedStatement du = conn.prepareStatement(
+                        "DELETE FROM Users WHERE userId=?");
+                du.setInt(1, userId);
+                du.executeUpdate();
             }
 
             conn.commit();
             conn.close();
             return true;
-        } catch (Exception e) {
+        } catch (Exception ex) {
             conn.rollback();
             conn.close();
-            throw e;
+            throw ex;
         }
     }
 
     public int countByManager(int managerId) throws Exception {
-        String sql = "SELECT COUNT(*) FROM Employees WHERE managerId = ?";
         Connection conn = DBConnection.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, managerId);
-        ResultSet rs = stmt.executeQuery();
+        PreparedStatement s = conn.prepareStatement(
+                "SELECT COUNT(*) FROM Employees WHERE managerId=?");
+        s.setInt(1, managerId);
+        ResultSet rs = s.executeQuery();
         rs.next();
-        int count = rs.getInt(1);
+        int c = rs.getInt(1);
         conn.close();
-        return count;
+        return c;
     }
 }

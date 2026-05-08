@@ -9,10 +9,17 @@ public class TaskController {
 
     private final TaskDAO taskDAO = new TaskDAO();
 
-    public void getAll(Context ctx) {
+    public void getByManager(Context ctx) {
         try {
-            int managerId = Integer.parseInt(ctx.pathParam("managerId"));
-            ctx.json(taskDAO.getByManager(managerId));
+            ctx.json(taskDAO.getByManager(Integer.parseInt(ctx.pathParam("managerId"))));
+        } catch (Exception e) {
+            ctx.status(500).json(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    public void getByEmployee(Context ctx) {
+        try {
+            ctx.json(taskDAO.getByEmployee(Integer.parseInt(ctx.pathParam("employeeId"))));
         } catch (Exception e) {
             ctx.status(500).json(Map.of("success", false, "message", e.getMessage()));
         }
@@ -20,16 +27,21 @@ public class TaskController {
 
     public void add(Context ctx) {
         try {
-            int managerId = Integer.parseInt(ctx.pathParam("managerId"));
-            Map<String, Object> body = ctx.bodyAsClass(Map.class);
+            int mid = Integer.parseInt(ctx.pathParam("managerId"));
+            Map<String,Object> body = ctx.bodyAsClass(Map.class);
+            String title = (String) body.get("titleTask");
+            if (title==null||title.isEmpty()) {
+                ctx.status(400).json(Map.of("success", false, "message", "Titre requis"));
+                return;
+            }
             Task task = new Task();
             task.setTaskId(taskDAO.getNextTaskId());
-            task.setTitleTask((String) body.get("titleTask"));
-            task.setDescriptionTask((String) body.get("descriptionTask"));
-            task.setDeadlineTask((String) body.get("deadlineTask"));
+            task.setTitleTask(title);
+            task.setDescriptionTask((String) body.getOrDefault("descriptionTask", ""));
+            task.setDeadlineTask((String) body.getOrDefault("deadlineTask", ""));
             task.setStatusTask("Pending");
             task.setEmployeesId(Integer.parseInt(body.get("employeesId").toString()));
-            task.setManagerId(managerId);
+            task.setManagerId(mid);
             boolean ok = taskDAO.add(task);
             ctx.status(ok ? 201 : 500).json(Map.of("success", ok));
         } catch (Exception e) {
@@ -40,9 +52,8 @@ public class TaskController {
     public void updateStatus(Context ctx) {
         try {
             int id = Integer.parseInt(ctx.pathParam("id"));
-            Map<String, String> body = ctx.bodyAsClass(Map.class);
-            boolean ok = taskDAO.updateStatus(id, body.get("statusTask"));
-            ctx.json(Map.of("success", ok));
+            Map<String,String> body = ctx.bodyAsClass(Map.class);
+            ctx.json(Map.of("success", taskDAO.updateStatus(id, body.get("statusTask"))));
         } catch (Exception e) {
             ctx.status(500).json(Map.of("success", false, "message", e.getMessage()));
         }
@@ -50,9 +61,7 @@ public class TaskController {
 
     public void delete(Context ctx) {
         try {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            boolean ok = taskDAO.delete(id);
-            ctx.json(Map.of("success", ok));
+            ctx.json(Map.of("success", taskDAO.delete(Integer.parseInt(ctx.pathParam("id")))));
         } catch (Exception e) {
             ctx.status(500).json(Map.of("success", false, "message", e.getMessage()));
         }

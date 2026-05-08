@@ -6,25 +6,20 @@ public class Employee {
     private String emailEmploye;
     private String status;
     private int    managerId;
+    private int    userId;
 
     public Employee() {}
 
-    public Employee(int employeesId, String employeName, String emailEmploye, String status, int managerId) {
-        this.employeesId  = employeesId;
-        this.employeName  = employeName;
-        this.emailEmploye = emailEmploye;
-        this.status       = status;
-        this.managerId    = managerId;
-    }
-
-    public int    getEmployeesId()                       { return employeesId; }
-    public void   setEmployeesId(int employeesId)        { this.employeesId = employeesId; }
-    public String getEmployeName()                       { return employeName; }
-    public void   setEmployeName(String employeName)     { this.employeName = employeName; }
-    public String getEmailEmploye()                      { return emailEmploye; }
-    public void   setEmailEmploye(String emailEmploye)   { this.emailEmploye = emailEmploye; }
-    public String getStatus()                            { return status; }
-    public void   setStatus(String status)               { this.status = status; }
-    public int    getManagerId()                         { return managerId; }
-    public void   setManagerId(int managerId)            { this.managerId = managerId; }
+    public int    getEmployeesId()             { return employeesId; }
+    public void   setEmployeesId(int v)        { this.employeesId = v; }
+    public String getEmployeName()             { return employeName; }
+    public void   setEmployeName(String v)     { this.employeName = v; }
+    public String getEmailEmploye()            { return emailEmploye; }
+    public void   setEmailEmploye(String v)    { this.emailEmploye = v; }
+    public String getStatus()                  { return status; }
+    public void   setStatus(String v)          { this.status = v; }
+    public int    getManagerId()               { return managerId; }
+    public void   setManagerId(int v)          { this.managerId = v; }
+    public int    getUserId()                  { return userId; }
+    public void   setUserId(int v)             { this.userId = v; }
 }
