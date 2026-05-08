@@ -38,7 +38,20 @@ public class TaskController {
             task.setTaskId(taskDAO.getNextTaskId());
             task.setTitleTask(title);
             task.setDescriptionTask((String) body.getOrDefault("descriptionTask", ""));
-            task.setDeadlineTask((String) body.getOrDefault("deadlineTask", ""));
+
+            String deadline = (String) body.get("deadlineTask");
+
+            if (deadline == null || deadline.isEmpty()) {
+                ctx.status(400).json(Map.of(
+                        "success", false,
+                        "message", "Deadline requise format YYYY-MM-DD"
+                ));
+                return;
+            }
+
+            task.setDeadlineTask(deadline);
+
+
             task.setStatusTask("Pending");
             task.setEmployeesId(Integer.parseInt(body.get("employeesId").toString()));
             task.setManagerId(mid);
